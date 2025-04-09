@@ -29,13 +29,13 @@ Diese dann bitte vorher ausführen, um Funktionalität zu garantieren.
 Zuerst starten wir den GPT-Neo-Server über das Terminal (macOS) bzw. dem CMD (Windows):
 
 ```bash
-python gpt-neo-server.py
+python3 gpt-neo-server.py
 ```
 
 Und dann den MCP-Server:
 
 ```bash
-python mcp-server.py
+python3 mcp-server.py
 ```
 
 **Hinweis**: Bitte zwei seperate Instanzen vom Terminal bzw. CMD verwenden.
