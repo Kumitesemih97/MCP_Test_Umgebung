@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Button Interaktionen mit LLM</title>
+    <style>
+        /* Allgemeine Styles für die Seite */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9; /* Helles Hintergrundfarbdesign */
+            color: #333;
+        }
+
+        /* Header mit grüner Hintergrundfarbe */
+        header {
+            background-color: #4CAF50;
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+
+        /* Container für den Inhalt */
+        .container {
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Stil für den Titel */
+        h1 {
+            color: #4CAF50;
+        }
+
+        /* Container für Buttons */
+        .button-container {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+        }
+
+        /* Allgemeiner Buttonstil */
+        button {
+            padding: 15px 30px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        /* Farben der Buttons */
+        .red { background-color: #f44336; color: white; }
+        .blue { background-color: #2196F3; color: white; }
+        .green { background-color: #4CAF50; color: white; }
+        .yellow { background-color: #FFEB3B; color: black; }
+
+        /* Hover-Effekt für Buttons */
+        button:hover {
+            opacity: 0.8;
+        }
+
+        /* Eingabefeld und Submit-Button */
+        .input-container {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        /* Stil für das Eingabefeld */
+        #user-prompt {
+            width: 80%;
+            padding: 10px;
+            font-size: 18px;
+            margin-right: 10px;
+            border-radius: 5px;
+            border: 2px solid #ddd;
+            margin-bottom: 20px;
+        }
+
+        /* Stil für den Absenden-Button */
+        .submit-btn {
+            padding: 12px 30px;
+            font-size: 18px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        /* Hover-Effekt für Absenden-Button */
+        .submit-btn:hover {
+            background-color: #45a049;
+        }
+
+        /* Bereich für Bestätigung oder Fehlermeldung */
+        #confirmation {
+            text-align: center;
+            font-size: 18px;
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+        }
+
+        /* Erfolgsnachricht-Stil */
+        .confirmation-success {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        /* Fehlermeldung-Stil */
+        .confirmation-error {
+            background-color: #f44336;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Interagiere mit dem LLM</h1>
+        <p>Gib einen Befehl ein und lasse das LLM einen Button auf der Seite klicken!</p>
+    </header>
+
+    <div class="container">
+        <!-- Button-Container mit mehreren Buttons -->
+        <div class="button-container">
+            <button class="red" id="red-button">Roter Button</button>
+            <button class="blue" id="blue-button">Blauer Button</button>
+            <button class="green" id="green-button">Grüner Button</button>
+            <button class="yellow" id="yellow-button">Gelber Button</button>
+        </div>
+
+        <!-- Eingabefeld und Absenden-Button -->
+        <div class="input-container">
+            <label for="user-prompt">Gib deinen Befehl ein:</label><br>
+            <input type="text" id="user-prompt" placeholder="Z.B. 'Klicke den roten Button'">
+            <button class="submit-btn" onclick="sendRequest()">Absenden</button>
+        </div>
+
+        <!-- Bestätigung oder Fehlermeldung wird hier angezeigt -->
+        <div id="confirmation"></div>
+    </div>
+
+    <script>
+        // Funktion, die die Anfrage an den MCP-Server sendet
+        function sendRequest() {
+            var prompt = document.getElementById("user-prompt").value;
+
+            // Überprüfen, ob der Benutzer ein Prompt eingegeben hat
+            if (!prompt) {
+                alert("Bitte gib einen Befehl ein.");
+                return;
+            }
+
+            // Anfrage an den MCP-Server senden
+            fetch('http://127.0.0.1:5001/mcp_request', {
+                method: 'POST',
+                body: new URLSearchParams({
+                    'prompt': prompt
+                }),
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded' // Den Content-Type für Formulardaten festlegen
+                }
+            })
+            .then(response => response.json()) // JSON-Antwort des Servers
+            .then(data => {
+                let confirmation = document.getElementById("confirmation");
+
+                // Überprüfen, ob ein Button geklickt werden soll
+                if (data.button_color) {
+                    confirmation.innerText = `LLM hat den ${data.button_color}en Button geklickt.`; // Bestätigung anzeigen
+                    confirmation.className = 'confirmation-success'; // Erfolgsnachricht anzeigen
+                    // Den Hintergrund des geklickten Buttons ändern
+                    document.getElementById(data.button_color + '-button').style.backgroundColor = 'gray';
+                } else {
+                    // Fehlerfall, wenn kein passender Button gefunden wurde
+                    confirmation.innerText = 'Kein passender Button gefunden.';
+                    confirmation.className = 'confirmation-error'; // Fehlermeldung anzeigen
+                }
+            })
+            .catch(error => {
+                // Fehlerbehandlung, falls die Anfrage fehlschlägt
+                let confirmation = document.getElementById("confirmation");
+                confirmation.innerText = 'Fehler bei der Anfrage.';
+                confirmation.className = 'confirmation-error'; // Fehlermeldung anzeigen
+            });
+        }
+    </script>
+</body>
+</html>
