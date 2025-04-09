@@ -8,6 +8,7 @@ Dies ist eine Test Umgebung, die es ermöglicht mit einem lokal ausgeführten GP
 - pip
 - PyTorch
 - Flask
+- Flask-CORS
 - Transformers
 
 ## Installation
