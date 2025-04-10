@@ -39,7 +39,6 @@ Und dann den MCP-Server:
 python3 mcp-server.py
 ```
 
-
 Unter Windows über das CMD den GPT-Neo-Server zuerst:
 
 ```bash
@@ -50,6 +49,7 @@ Und dann den MCP-Server:
 
 ```bash
 python mcp-server.py
+
 
 **Hinweis**: Bitte zwei seperate Instanzen vom Terminal bzw. CMD verwenden.
 
