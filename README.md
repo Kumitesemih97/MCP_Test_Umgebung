@@ -49,7 +49,7 @@ Und dann den MCP-Server:
 
 ```bash
 python mcp-server.py
-
+```
 
 **Hinweis**: Bitte zwei seperate Instanzen vom Terminal bzw. CMD verwenden.
 
